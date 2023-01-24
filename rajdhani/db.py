@@ -24,10 +24,31 @@ def search_trains(
 
     This is used to get show the trains on the search results page.
     """
-    # TODO: make a db query to get the matching trains
-    # and replace the following dummy implementation
+    
+    q = f"""select
+            number,
+            name,
+            from_station_code,
+            from_station_name,
+            to_station_code,
+            to_station_name,
+            departure,
+            arrival,
+            duration_h,
+            duration_m
+            from train
+            where from_station_code == '{from_station_code}'
+            and to_station_code == '{to_station_code}'
+        """
 
-    return placeholders.SEARCH_TRAINS
+    columns, rows = db_ops.exec_query(q)
+
+    results = []
+
+    for row in rows:
+        results.append(dict(zip(columns,row)))
+
+    return results
 
 def search_stations(q):
     """Returns the top ten stations matching the given query string.
