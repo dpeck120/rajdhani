@@ -10,6 +10,14 @@ db_ops.ensure_db()
 # config has 'db_uri' that can be used to connect to the database
 from . import config
 
+ticket_classes = {
+            "SL":"sleeper",
+            "3A":"third_ac",
+            "2A":"second_ac",
+            "1A":"first_ac",
+            "FC":"first_class",
+            "CC":"chair_car"
+        }
 
 def search_trains(
         from_station_code,
@@ -40,6 +48,9 @@ def search_trains(
             where from_station_code == '{from_station_code}'
             and to_station_code == '{to_station_code}'
         """
+
+    if ticket_class in ticket_classes:
+        q += f"and {ticket_classes[ticket_class]} == true"
 
     columns, rows = db_ops.exec_query(q)
 
