@@ -28,13 +28,13 @@ time_slots = {
 }
 
 def get_time_query(slots, type):
-    q = "and ("
+    query = "and ("
     for slot in slots:
-        q += f"({type} >= {time_slots[slot][0]} and {type} <= {time_slots[slot][1]}) or "
+        query += f"({type} >= {time_slots[slot][0]} and {type} <= {time_slots[slot][1]}) or "
 
-    q = f"{q[0:len(q)-3]})"
+    query = f"{query[0:len(query)-3]})"
 
-    return q
+    return query
 
 def search_trains(
         from_station_code,
@@ -49,10 +49,8 @@ def search_trains(
 
     This is used to get show the trains on the search results page.
     """
-    
-    columns, rows = db_ops.exec_query("select * from train")
 
-    q = f"""select
+    query = f"""select
             number,
             name,
             from_station_code,
@@ -69,19 +67,19 @@ def search_trains(
         """
 
     if ticket_class in ticket_classes:
-        q += f"and {ticket_classes[ticket_class]} == true "
+        query += f"and {ticket_classes[ticket_class]} == true "
 
     if len(departure_time) > 0:
         # convert departure time to seconds
         type = f"substr(departure,1,2) * 3600 + substr(departure, 4,2) * 60 + substr(departure, 7,2)"
-        q += get_time_query(departure_time, type)
+        query += get_time_query(departure_time, type)
 
     if len(arrival_time) > 0:
-        # convert departure time to seconds
+        # convert arrival time to seconds
         type = f"substr(arrival,1,2) * 3600 + substr(arrival, 4,2) * 60 + substr(arrival, 7,2)"
-        q += get_time_query(arrival_time, type)
+        query += get_time_query(arrival_time, type)
 
-    columns, rows = db_ops.exec_query(q)
+    columns, rows = db_ops.exec_query(query)
 
     results = []
 
@@ -98,9 +96,24 @@ def search_stations(q):
     The q is the few characters of the station name or
     code entered by the user.
     """
-    # TODO: make a db query to get the matching stations
-    # and replace the following dummy implementation
-    return placeholders.AUTOCOMPLETE_STATIONS
+    query = f"""SELECT
+            code,
+            name
+            FROM station
+        """
+
+    query += f"WHERE UPPER(code) LIKE '{q.upper()}%' or UPPER(name) LIKE '%{q.upper()}%' "
+
+    query += "limit 10"
+
+    columns, rows = db_ops.exec_query(query)
+
+    results = []
+
+    for row in rows:
+        results.append(dict(zip(columns,row)))
+
+    return results
 
 def get_schedule(train_number):
     """Returns the schedule of a train.
