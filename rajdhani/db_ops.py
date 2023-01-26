@@ -44,3 +44,18 @@ def exec_query(q, commit=False):
         conn.close()
 
     return columns, rows
+
+def exec_insert(q, commit=False):
+    conn = get_conn()
+    curs = conn.cursor()
+
+    try:
+        curs.execute(q)
+        if commit:
+            conn.commit()
+
+        rows = curs.fetchall()
+    finally:
+        conn.close()
+
+    return rows

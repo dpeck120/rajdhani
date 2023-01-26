@@ -9,7 +9,7 @@ flag_homepage = True
 flag_ticketclass_in_search = True
 flag_search_filters = True
 flag_show_schedule_link = True
-flag_bookings = False
+flag_bookings = True
 flag_login = False
 
 ## Database configurations
@@ -25,7 +25,7 @@ base_status_page_url = "https://rajdhani.pipal.in"
 # This default configuration will work with a locally running
 # server. e.g. with `pip install aiosmtpd; aiosmtpd -n`
 
-smtp_hostname = os.getenv("SMTP_HOSTNAME", "localhost"),
-smtp_port = os.getenv("SMTP_PORT", "8025"),
-smtp_username = os.getenv("SMTP_USERNAME", None),
+smtp_hostname = os.getenv("SMTP_HOSTNAME", "localhost")
+smtp_port = os.getenv("SMTP_PORT", "8025")
+smtp_username = os.getenv("SMTP_USERNAME", None)
 smtp_password = os.getenv("SMTP_PASSWORD", None)

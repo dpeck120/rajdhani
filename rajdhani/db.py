@@ -143,12 +143,35 @@ def book_ticket(train_number, ticket_class, departure_date, passenger_name, pass
     # TODO: make a db query and insert a new booking
     # into the booking table
 
-    return placeholders.TRIPS[0]
+    train_columns, train_row = db_ops.exec_query(f"select from_station_code, to_station_code from train where number = '{train_number}' limit 1")
+
+    query = f"""
+        INSERT INTO booking ('train_number', 'ticket_class', 'date', 'passenger_name', 'passenger_email', 'from_station_code', 'to_station_code')
+        VALUES ('{train_number}', '{ticket_class}', '{departure_date}', '{passenger_name}', '{passenger_email}', '{train_row[0][0]}', '{train_row[0][1]}')
+    """
+
+    rows = db_ops.exec_insert(query,True)
+
+    return []
 
 def get_trips(email):
     """Returns the bookings made by the user
     """
     # TODO: make a db query and get the bookings
     # made by user with `email`
+
+    # {
+    #     "train_number": "12608",
+    #     "train_name": "Lalbagh Exp",
+    #     "from_station_code": "SBC",
+    #     "from_station_name": "Bangalore",
+    #     "to_station_code": "MAS",
+    #     "to_station_name": "Chennai",
+    #     "ticket_class": "3A",
+    #     "date": "2022-09-22",
+    #     "passenger_name": "Tourist",
+    #     "passenger_email": "tourist@example.com",
+    # },
+
 
     return placeholders.TRIPS
