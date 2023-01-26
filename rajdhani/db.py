@@ -11,13 +11,30 @@ db_ops.ensure_db()
 from . import config
 
 ticket_classes = {
-            "SL":"sleeper",
-            "3A":"third_ac",
-            "2A":"second_ac",
-            "1A":"first_ac",
-            "FC":"first_class",
-            "CC":"chair_car"
-        }
+    "SL":"sleeper",
+    "3A":"third_ac",
+    "2A":"second_ac",
+    "1A":"first_ac",
+    "FC":"first_class",
+    "CC":"chair_car"
+}
+
+time_slots = {
+    "slot1": (0,28800),
+    "slot2": (28800,43200),
+    "slot3": (43200,57600),
+    "slot4": (57600,72000),
+    "slot5": (72000,86400)
+}
+
+def get_time_query(slots, type):
+    q = "and ("
+    for slot in slots:
+        q += f"({type} >= {time_slots[slot][0]} and {type} <= {time_slots[slot][1]}) or "
+
+    q = f"{q[0:len(q)-3]})"
+
+    return q
 
 def search_trains(
         from_station_code,
@@ -33,6 +50,8 @@ def search_trains(
     This is used to get show the trains on the search results page.
     """
     
+    columns, rows = db_ops.exec_query("select * from train")
+
     q = f"""select
             number,
             name,
@@ -50,7 +69,17 @@ def search_trains(
         """
 
     if ticket_class in ticket_classes:
-        q += f"and {ticket_classes[ticket_class]} == true"
+        q += f"and {ticket_classes[ticket_class]} == true "
+
+    if len(departure_time) > 0:
+        # convert departure time to seconds
+        type = f"substr(departure,1,2) * 3600 + substr(departure, 4,2) * 60 + substr(departure, 7,2)"
+        q += get_time_query(departure_time, type)
+
+    if len(arrival_time) > 0:
+        # convert departure time to seconds
+        type = f"substr(arrival,1,2) * 3600 + substr(arrival, 4,2) * 60 + substr(arrival, 7,2)"
+        q += get_time_query(arrival_time, type)
 
     columns, rows = db_ops.exec_query(q)
 
