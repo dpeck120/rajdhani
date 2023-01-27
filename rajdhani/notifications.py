@@ -15,11 +15,11 @@ def send_booking_confirmation_email(booking):
     # The smtp configuration is available in the config module
 
     sender_email = "noreply@rajdhani.pipal.in"
-    receiver_email = "new@example.com"
+    receiver_email = booking['passenger_email']
     message = MIMEMultipart("alternative")
     message["Subject"] = "Booking Confirmation"
     message["From"] = sender_email
-    message["To"] = booking['passenger_email']
+    message["To"] = receiver_email
 
     # write the text/plain part
     text = f"""
