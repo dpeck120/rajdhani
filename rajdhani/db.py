@@ -172,7 +172,7 @@ def get_trips(email):
 
     query = f"""SELECT *
             FROM booking
-            WHERE passenger_email = {email}
+            WHERE passenger_email = '{email}'
         """
 
     columns, rows = db_ops.exec_query(query)
@@ -184,5 +184,3 @@ def get_trips(email):
 
     return results
 
-
-    return placeholders.TRIPS
