@@ -140,9 +140,6 @@ def get_schedule(train_number):
 def book_ticket(train_number, ticket_class, departure_date, passenger_name, passenger_email):
     """Book a ticket for passenger
     """
-    # TODO: make a db query and insert a new booking
-    # into the booking table
-
     train_columns, train_row = db_ops.exec_query(f"select from_station_code, to_station_code from train where number = '{train_number}' limit 1")
 
     query = f"""
@@ -152,7 +149,7 @@ def book_ticket(train_number, ticket_class, departure_date, passenger_name, pass
 
     rows = db_ops.exec_insert(query,True)
 
-    return []
+    return {'train_number' : train_number, 'ticket_class' : ticket_class, 'departure_date' : departure_date,  'passenger_name' : passenger_name, 'passenger_email' : passenger_email }
 
 def get_trips(email):
     """Returns the bookings made by the user
@@ -172,6 +169,20 @@ def get_trips(email):
     #     "passenger_name": "Tourist",
     #     "passenger_email": "tourist@example.com",
     # },
+
+    query = f"""SELECT *
+            FROM booking
+            WHERE passenger_email = {email}
+        """
+
+    columns, rows = db_ops.exec_query(query)
+
+    results = []
+
+    for row in rows:
+        results.append(dict(zip(columns,row)))
+
+    return results
 
 
     return placeholders.TRIPS
